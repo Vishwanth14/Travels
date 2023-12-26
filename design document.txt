@@ -1,0 +1,70 @@
+High Level Design:
+ This project contains 4 components:
+ Controller, Service, Repository and Entity
+ Client makes requests to the RESTful endpoints of TravelPackageController.
+ TravelPackageController delegates requests to TravelAgencyService.
+ TravelAgencyService interacts with repositories to perform CRUD operations on entities.
+ Entities are persisted and retrieved from the database using JPA.
+ Service layer performs business logic and calculations.
+ Data is returned to the client or appropriate actions are taken based on the request.
+
+Low Level Design:
+  Class Details:
+   Activity Class:
+   Properties: id, name, description, cost, capacity, destination (ManyToOne)
+   Destination Class:
+   Properties: id, name, activities (OneToMany)
+   TravelPackage Class:
+   Properties: id, name, passengerCapacity, destinations (OneToMany), passengers (OneToMany)
+   Passenger Class:
+   Properties: id, name, passengerNumber, balance, passengerType, activities (ManyToMany), travelPackage (ManyToOne)
+   Methods: Constructors, Getters, Setters for all classes.
+
+ Repositories:
+  ActivityRepository, DestinationRepository, TravelPackageRepository: Extends JpaRepository for CRUD operations.
+  PassengerRepository: Extends JpaRepository for CRUD operations, custom query methods findByActivities and findByTravelPackageId
+
+TravelAgencyService Class:
+Properties: activityRepository, destinationRepository, travelPackageRepository, passengerRepository
+Methods:
+printItinerary(Long travelPackageId)
+printPassengerList(Long travelPackageId)
+printPassengerDetails(Long passengerId)
+printAvailableActivities(Long travelPackageId)
+calculatePrice(Activity activity, Passenger passenger)
+countEnrolledPassengers(Activity activity)
+
+TravelPackageController Class:
+Properties: travelAgencyService
+Methods:
+printItinerary(Long id)
+printPassengerList(Long id)
+printPassengerDetails(Long id)
+printAvailableActivities(Long id)
+
+Relationships:
+Activity-Destination:
+Many activities can belong to one destination (Many-to-One).
+Destination-Activity:
+One destination can have many activities (One-to-Many).
+TravelPackage-Destination:
+One travel package can have many destinations (One-to-Many).
+TravelPackage-Passenger:
+One travel package can have many passengers (One-to-Many).
+Passenger-Activity:
+Many passengers can enroll in many activities (Many-to-Many).
+
+Database Schema:
+Activity Table:
+id (PK), name, description, cost, capacity, destination_id (FK).
+Destination Table:
+id (PK), name.
+TravelPackage Table:
+id (PK), name, passenger_capacity.
+Passenger Table:
+id (PK), name, passenger_number, balance, passenger_type, travel_package_id (FK).
+Passenger_Activity Table (Join Table for Many-to-Many Relationship):
+passenger_id (FK), activity_id (FK).
+Activity_Destination Table (Join Table for Many-to-One Relationship):
+activity_id (FK), destination_id (FK).
+*PK - Primary Key, *FK - Foreign Key
